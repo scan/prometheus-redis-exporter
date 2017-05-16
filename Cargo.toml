@@ -1,0 +1,9 @@
+[package]
+name = "prometheus-redis-exporter"
+version = "0.1.0"
+authors = ["Tom Streller <tom.streller@localsearch.ch>"]
+
+[dependencies]
+redis = "0.8.*"
+prometheus = "0.2"
+nickel = "*"
