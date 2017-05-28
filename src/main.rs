@@ -74,12 +74,15 @@ fn main() {
                 (prometheus_prefix.clone() + "_" + gauge_name),
                 gauge_desc.to_owned()
             );
-            let gauge = Gauge::with_opts(opts).unwrap();
+            let gauge = match Gauge::with_opts(opts) {
+                Ok(g) => g,
+                Err(_) => continue,
+            };
             let val: String = info.get(redis_name).unwrap_or(String::new());
 
-            gauge.set(val.parse().unwrap());
+            gauge.set(val.parse().unwrap_or(0.0)); // Owl
 
-            registry.register(Box::new(gauge.clone())).unwrap();
+            let _ = registry.register(Box::new(gauge.clone()));
         }
 
         res.set(MediaType::Txt);
