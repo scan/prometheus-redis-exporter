@@ -2,6 +2,7 @@
 extern crate nickel;
 extern crate redis;
 extern crate prometheus;
+extern crate time;
 
 use nickel::{Nickel, MediaType, HttpRouter, NickelError};
 use nickel::status::StatusCode;
@@ -57,6 +58,7 @@ fn main() {
 
     server.get("/metrics",
                middleware! { |_, mut res|
+        let start = time::now_utc();
         let registry = Registry::new();
         let info = match fetch_redis_info() {
             Err(e) => return Err(NickelError::new(res,
@@ -87,7 +89,13 @@ fn main() {
 
         res.set(MediaType::Txt);
 
-        get_encoded_from_registry(registry)
+        let result = get_encoded_from_registry(registry);
+
+        let duration = time::now_utc() - start;
+
+        println!("Metrics rendered, time taken: {} ms", duration.num_microseconds().map(|x| (x as f64) / 1000.0).unwrap_or(0.0));
+
+        result
     });
 
     let app_port: String = env::var("APP_PORT").unwrap_or(String::from("9121"));

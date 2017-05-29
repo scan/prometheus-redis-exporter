@@ -7,3 +7,4 @@ authors = ["Tom Streller <tom.streller@localsearch.ch>"]
 redis = "0.8.*"
 prometheus = "0.2"
 nickel = "*"
+time = "*"
